@@ -16,3 +16,18 @@ describe("Shopping Cart Step 1", () => {
         });
     });
 });
+
+describe("Shopping Cart Step 2", () => {
+    describe("Add multiple quantities of the same product to the shopping cart", () => {
+        test("should update the quantity of an existing product in the cart", () => {
+            let cart = createCart();
+            const doveSoap = createProduct("Dove Soap", 39.99);
+            cart = addProduct(cart, doveSoap, 5);
+            cart = addProduct(cart, doveSoap, 3); // Adding more of the same product
+
+            expect(getProductQuantity(cart, "Dove Soap")).toBe(8); // Total quantity should be 8
+            expect(getProductUnitPrice(cart, "Dove Soap")).toBe(39.99);
+            expect(getTotalItems(cart)).toBe(319.92); // 8 * 39.99
+        });
+    });
+});
