@@ -6,17 +6,28 @@ function createCart() {
 }
 
 function addProduct(cart, product, quantity) {
-    //check if product already exists in cart
-    const existingItem = cart.items.find(item => item.product.name === product.name);
-    if (existingItem) {
-        //if product already exists, update quantity
-        existingItem.quantity += quantity;
-    } else {
-        //else, add new product to cart
-        cart.items.push({ product: product, quantity: quantity });
-    }
-    //return updated cart
-    return cart;
+  const existingItemIndex = cart.items.findIndex(
+    (item) => item.product.name === product.name
+  );
+
+  if (existingItemIndex > -1) {
+    //  If product exists, create a new items array with the updated quantity
+    const newItems = cart.items.map((item, index) => {
+      if (index === existingItemIndex) {
+        return { ...item, quantity: item.quantity + quantity };
+      }
+      return item;
+    });
+
+    //  Return a NEW cart object with the NEW items array
+    return { ...cart, items: newItems };
+  }
+
+  //  If product is new, return a NEW cart with the new item added to the list
+  return {
+    ...cart,
+    items: [...cart.items, { product, quantity }],
+  };
 }
 
 //additional functions 
