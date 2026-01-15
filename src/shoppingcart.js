@@ -32,11 +32,34 @@ function getProductUnitPrice(cart, productName) {
 }
 
 function getTotalItems(cart) {
-    const total = cart.items.reduce((sum, item) => {
-        return sum + (item.product.price * item.quantity);
-    }, 0);
-    //round up to 2 decimal places
-    return Math.round(total * 100) / 100;
+  // Add everything using integer math (cents)
+  const totalInCents = cart.items.reduce((sum, item) => {
+    const priceInCents = Math.round(item.product.price * 100);
+    return sum + priceInCents * item.quantity;
+  }, 0);
+
+  // Convert back to dollars
+  return totalInCents / 100;
+}
+
+function setTaxRate(cart, rate) {
+    return { ...cart, taxRate: rate };
+}
+
+function getTaxAmount(cart) {
+  const subTotal = getTotalItems(cart);
+  // Convert to cents (integer), calculate tax, round once, then back to dollars
+  const subTotalInCents = Math.round(subTotal * 100);
+  const taxInCents = Math.round(subTotalInCents * (cart.taxRate / 100));
+
+  return taxInCents / 100;
+}
+
+function getTotalWithTax(cart) {
+  const subTotalInCents = Math.round(getTotalItems(cart) * 100);
+  const taxInCents = Math.round(getTaxAmount(cart) * 100);
+
+  return (subTotalInCents + taxInCents) / 100;
 }
 
 module.exports = {
@@ -44,5 +67,8 @@ module.exports = {
     addProduct,
     getProductQuantity,
     getProductUnitPrice,
-    getTotalItems
+    getTotalItems,
+    setTaxRate,
+    getTaxAmount,
+    getTotalWithTax
 };
